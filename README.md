@@ -108,6 +108,8 @@ npm start
 ![WhatsApp Image 2024-04-27 at 10 46 08 PM (1)](https://github.com/KarthikeyaKollu/reactflow-Techstax/assets/108949445/e16255a5-545a-4877-9dde-a5d6d5a207c9)
 
 ---
+video demo [link](https://drive.google.com/file/d/13NkMZ7dDOFItNfHeTk3scuPpereFXX93/view?usp=sharing)
+Backend: [link](https://github.com/KarthikeyaKollu/Techstax-server.git)
 
 ## Acknowledgements
 
