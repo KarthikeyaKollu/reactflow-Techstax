@@ -14,6 +14,9 @@ import { RightSideBar } from './components/RightSideBar';
 import { writeData, readData } from "./components/firebaseExample"
 import './index.css';
 import uuid from 'react-uuid';
+import { SideBar } from './components/SideBar';
+import { Upload } from './components/Upload';
+import { NavBar } from './components/NavBar';
 
 const initialNodes = [
   {
@@ -129,52 +132,22 @@ const App = () => {
   }, [nodes, edges]);
 
 
-  async function uploadFileAndWorkflow() {
-    try {
-      console.log("Contacting server ...");
-
-      const fileInput = document.getElementById('fileInput');
-      const file = fileInput.files[0];
-
-      if (!file) {
-        console.error('No file selected.');
-        return;
-      }
-
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('workflowTypes', workflowArray);
-
-      const response = await fetch('http://localhost:3000/upload-workflow', {
-        method: 'POST',
-        body: formData
-      });
-
-      if (!response.ok) {
-        throw new Error('File upload and workflow data sending failed');
-      }
-
-      console.log('File uploaded and workflow data sent successfully.');
-
-    } catch (error) {
-      console.error('Error:', error.message);
-    }
-  }
-
-
-
-  const saveToDatabase = () => {
-    console.log(edges);
-    console.log(nodes);
-    writeData("userID/nodes", nodes);
-    writeData("userID/edges", edges);
-
-
-  }
-
   return (
-    <div className="dndflow">
-      <ReactFlowProvider>
+    <>
+    <div>
+
+      <div>
+      <NavBar/>
+      </div>
+
+      <div className='grid grid-cols-12 h-screen w-screen'>
+    
+        <div className='col-span-2 h-screen'>
+        <SideBar/>
+        </div>
+
+        <div className='col-span-8 dndflow'>
+        <ReactFlowProvider>
         <div className="h-[800px] w-full" ref={reactFlowWrapper}>
           <ReactFlow
             nodes={nodes}
@@ -191,18 +164,26 @@ const App = () => {
             <MiniMap  nodeStrokeWidth={3} zoomable pannable />
             <Background color="#ccc" variant={"cross"} />
           </ReactFlow>
+        </div>  
+        </ReactFlowProvider>      
         </div>
-        <RightSideBar />
-        <button onClick={saveToDatabase}>
-          save
-        </button>
 
+        <div className='col-span-2 grid grid-rows-10'>
 
-        <input type="file" id="fileInput" />
-        <button onClick={uploadFileAndWorkflow}>Upload</button>
+          <div className='row-span-6 dndflow w-full h-[800px]' ref={reactFlowWrapper}>
+          <RightSideBar/>
+          </div>
 
-      </ReactFlowProvider>
+          <div className='row-span-4'>
+          <Upload/>
+          </div>
+
+        </div>
+        
+      </div>
+
     </div>
+    </>
   );
 };
 
