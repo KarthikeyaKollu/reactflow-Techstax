@@ -14,6 +14,8 @@ import { RightSideBar } from './components/RightSideBar';
 import { writeData, readData } from "./components/firebaseExample"
 import './index.css';
 import uuid from 'react-uuid';
+import {Auth} from "./Auth"
+import { useUser } from '@clerk/clerk-react';
 
 const initialNodes = [
   {
@@ -33,11 +35,20 @@ const initialEdges = [
 
 const App = () => {
 
-
+ 
   const reactFlowWrapper = useRef(null);
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
+  const { isSignedIn, user, isLoaded } = useUser();
+
+  useEffect(() => {
+    if (user) {
+      console.log('User ID:', user.id);
+    }
+ 
+  
+  }, [user]);
 
 
 
@@ -87,13 +98,14 @@ const App = () => {
    getSavedData()
 
 
-  }, [])
+  }, [user])
 
   const getSavedData = async () => {
-    const data = await readData("userID");
+
+    const data = await readData(`${user?.id}`);
     console.log(data)
-    setEdges(data.edges ?? []);
-    setNodes(data.nodes ?? []);
+    setEdges(data?.edges ?? []);
+    setNodes(data?.nodes ?? []);
 
   }
 
@@ -166,42 +178,53 @@ const App = () => {
   const saveToDatabase = () => {
     console.log(edges);
     console.log(nodes);
-    writeData("userID/nodes", nodes);
-    writeData("userID/edges", edges);
+    writeData(`${user.id}/nodes`, nodes);
+    writeData(`${user.id}/edges`, edges);
 
 
   }
 
   return (
     <div className="dndflow">
-      <ReactFlowProvider>
-        <div className="h-[800px] w-full" ref={reactFlowWrapper}>
-          <ReactFlow
-            nodes={nodes}
-            edges={edges}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onConnect={onConnect}
-            onInit={setReactFlowInstance}
-            onDrop={onDrop}
-            onDragOver={onDragOver}
-            fitView
-          >
-            <Controls />
-            <MiniMap  nodeStrokeWidth={3} zoomable pannable />
-            <Background color="#ccc" variant={"cross"} />
-          </ReactFlow>
-        </div>
-        <RightSideBar />
-        <button onClick={saveToDatabase}>
-          save
-        </button>
+     
+     {isSignedIn ?(
+       <ReactFlowProvider>
+         <Auth/>
+       <div className="h-[800px] w-full" ref={reactFlowWrapper}>
+         <ReactFlow
+           nodes={nodes}
+           edges={edges}
+           onNodesChange={onNodesChange}
+           onEdgesChange={onEdgesChange}
+           onConnect={onConnect}
+           onInit={setReactFlowInstance}
+           onDrop={onDrop}
+           onDragOver={onDragOver}
+           fitView
+         >
+           <Controls />
+           <MiniMap  nodeStrokeWidth={3} zoomable pannable />
+           <Background color="#ccc" variant={"cross"} />
+         </ReactFlow>
+       </div>
+       <RightSideBar />
+       <button onClick={saveToDatabase}>
+         save
+       </button>
 
 
-        <input type="file" id="fileInput" />
-        <button onClick={uploadFileAndWorkflow}>Upload</button>
+       <input type="file" id="fileInput" />
+       <button onClick={uploadFileAndWorkflow}>Upload</button>
 
-      </ReactFlowProvider>
+     </ReactFlowProvider>
+     ):(
+          <div>
+
+              <Auth/>
+
+          </div>
+
+     )}
     </div>
   );
 };
