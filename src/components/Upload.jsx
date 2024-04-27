@@ -1,6 +1,9 @@
 import React from 'react'
+// import {Auth} from "./Auth"
+import { useUser } from '@clerk/clerk-react';
 
 export const Upload = () => {
+  const { isSignedIn, user, isLoaded } = useUser();
     async function uploadFileAndWorkflow() {
         try {
           console.log("Contacting server ...");
@@ -36,8 +39,8 @@ export const Upload = () => {
       const saveToDatabase = () => {
         console.log(edges);
         console.log(nodes);
-        writeData("userID/nodes", nodes);
-        writeData("userID/edges", edges);
+        writeData(`${user.id}/nodes`, nodes);
+        writeData(`${user.id}/edges`, edges);
     
     
       }
